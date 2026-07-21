@@ -31,7 +31,7 @@ export default function IdeaForm() {
 
             const response = await generateReport(data, token);
             console.log(response);
-            setReport(response);
+            setReport(response.report);
 
             toast.success("Startup report generated successfully!");
 

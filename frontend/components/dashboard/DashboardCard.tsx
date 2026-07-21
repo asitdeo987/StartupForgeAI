@@ -1,6 +1,6 @@
 interface DashboardCardProps {
     title: string;
-    value: number;
+    value: string | number;
     description: string;
 }
 

@@ -1,16 +1,23 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
 import { useAuth } from "@/hooks/useAuth";
-
 import Navbar from "@/components/dashboard/Navbar";
 import DashboardHeader from "@/components/dashboard/DashboardHeader";
 import DashboardCard from "@/components/dashboard/DashboardCard";
+import { getDashboardStats } from "@/services/report-history.service";
+
+interface DashboardStats {
+    total_reports?: number;
+    total_chats?:number;
+    top_industry?:string;
+    latest_report?:string
+}
 
 export default function DashboardPage() {
     const router = useRouter();
+    const [stats, setStats] = useState<DashboardStats | null>(null);
 
     const {
         loading,
@@ -18,10 +25,18 @@ export default function DashboardPage() {
     } = useAuth();
 
     useEffect(() => {
-        if (!loading && !isAuthenticated) {
-            router.replace("/login");
+    if (!isAuthenticated) return;
+    async function loadStats() {
+        try {
+            const token = localStorage.getItem("token") || "";
+            const data = await getDashboardStats(token);
+            setStats(data);
+        } catch (error) {
+            console.error(error);
         }
-    }, [loading, isAuthenticated, router]);
+    }
+    loadStats();
+}, [isAuthenticated]);
 
     if (loading) {
         return (
@@ -48,26 +63,30 @@ export default function DashboardPage() {
                 <section className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
 
                     <DashboardCard
-                        title="Startup Ideas"
-                        value={0}
+                        title="Reports"
+                        value={stats?.total_reports ?? 0}
                         description="AI generated startup ideas"
                     />
 
                     <DashboardCard
-                        title="Business Plans"
-                        value={0}
+                        title="AI Chats"
+                        value={stats?.total_chats ?? 0}
                         description="Generated business plans"
                     />
 
                     <DashboardCard
-                        title="Technical Architectures"
-                        value={0}
+                        title="Top Industry"
+                        value={stats?.top_industry ?? "-"}
                         description="System designs created"
                     />
 
                     <DashboardCard
-                        title="Roadmaps"
-                        value={0}
+                        title="Latest Report"
+                        value={
+                            stats?.latest_report
+                            ? new Date(stats.latest_report).toLocaleDateString()
+                            : "-"
+                        }
                         description="Project roadmaps generated"
                     />
 

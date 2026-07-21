@@ -30,3 +30,27 @@ def generate_text(prompt: str) -> str:
     )
 
     return response.choices[0].message.content
+
+def generate_chat(prompt: str) -> str:
+
+    response = client.chat.completions.create(
+        model="openai/gpt-oss-20b",
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are an expert startup mentor. "
+                    "Answer naturally like ChatGPT. "
+                    "Do not return JSON. "
+                    "Give clear, detailed, practical advice."
+                ),
+            },
+            {
+                "role": "user",
+                "content": prompt,
+            },
+        ],
+        temperature=0.7,
+    )
+
+    return response.choices[0].message.content

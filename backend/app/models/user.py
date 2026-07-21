@@ -1,6 +1,6 @@
 from datetime import datetime, UTC
 from sqlalchemy import String, DateTime
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.base import Base
 
 class User(Base):
@@ -37,5 +37,22 @@ class User(Base):
         DateTime(timezone=True),
         default=lambda: datetime.now(UTC),
         onupdate=lambda: datetime.now(UTC)
+    )
+    reports = relationship(
+        "Report",
+        back_populates="user",
+        cascade="all, delete-orphan",
+    )
+
+    chat_messages = relationship(
+    "ChatMessage",
+    back_populates="user",
+    cascade="all, delete-orphan",
+    )
+
+    pitch_decks = relationship(
+    "PitchDeck",
+    back_populates="user",
+    cascade="all, delete-orphan",
     )
 
